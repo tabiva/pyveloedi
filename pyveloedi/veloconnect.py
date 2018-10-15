@@ -515,6 +515,10 @@ class Product(VeloModelMixin, ProductBase):
 
     @property
     def picture(self):
+        return buffer(urllib2.urlopen(self.picture_url).read()) if self.picture_url is not None else None
+
+    @property 
+    def picture_url(self):
         urls = self._data.xpath(
             'cac:Item/vcc:ItemInformation/vcc:InformationURL'
             '/vcc:Disposition[text()="picture"]/../vcc:URI',
@@ -522,7 +526,8 @@ class Product(VeloModelMixin, ProductBase):
         url = len(urls) and urls[0].text or None
         if url is None:
             return None
-        return buffer(urllib2.urlopen(url).read())
+        return url
+
 
     @classmethod
     def search(cls, keywords, offset=0, limit=20, count=False):
